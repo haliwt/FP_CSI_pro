@@ -54,13 +54,15 @@ void CheckRun(void)
       break;
 
       case 0x10:
+	  	    LAMP_POWER_OFF();
             POWER_OFF();
-			LAMP_POWER_OFF();
+			
       break;
 
       case 0x11:
            POWER_ON();
-		   LAMP_POWER_ON();
+		   LAMP_WHICH_ONE_ON(0);
+		   
 
       break;
       default :

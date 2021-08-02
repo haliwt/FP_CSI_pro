@@ -33,7 +33,8 @@ void LAMP_InitValue(void);
 void LAMP_POWER_ON(void);
 void LAMP_POWER_OFF(void);
 
-void LAMP_WHICH_ONE_ON(void);
+void LAMP_WHICH_ONE_ON(uint8_t lamp);
+
 
 
 
