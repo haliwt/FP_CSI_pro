@@ -23,6 +23,9 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "key.h"
+#include "run.h"
+#include "lamp.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -67,7 +70,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  //   uint8_t keyvalue;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -90,17 +93,22 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
-  MX_TIM14_Init();
+ // MX_TIM14_Init();
   MX_USART2_UART_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-
+     LAMP_InitValue();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  
   while (1)
   {
+
+   
+	 CheckMode(run_t.power_state);
+	 CheckRun();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

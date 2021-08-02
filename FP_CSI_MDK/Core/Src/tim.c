@@ -66,17 +66,11 @@ void MX_TIM1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM1_Init 2 */
-
+   HAL_TIM_Base_Start_IT(&htim1); //timer1 interrupt 
   /* USER CODE END TIM1_Init 2 */
 
 }
-/************************************************************** 
-	*
-    *Function Name:void MX_TIM2_Init(void)
-	*Function :PWM ->GPIO->PB3->motor PWM 10KHZ
-	*
-	*
-***************************************************************/
+/* TIM2 init function */
 void MX_TIM2_Init(void)
 {
 
@@ -92,9 +86,9 @@ void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 24-1; //Fclk= Fsystem /(Prescaler+1)=24MHz/(23+1)=1MHZ
+  htim2.Init.Prescaler = 0; // 24MHZ 
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 100-1; //Ftimer2 = Fclk /(Period+1)=1MHZ/100 = 10KHz.
+  htim2.Init.Period = 4294967295;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -117,7 +111,7 @@ void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 50;//Pwm duty cycle = Puls/(Period+1)=50/100=0.5*100%=50%
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
@@ -130,13 +124,7 @@ void MX_TIM2_Init(void)
   HAL_TIM_MspPostInit(&htim2);
 
 }
-/************************************************************** 
-	*
-    *Function Name:void MX_TIM14_Init(void)
-	*Function :PWM ->GPIO->PB1  LAMP OF PWM dimming light
-	*          20K~1MHZ ->40KHZ
-	*
-***************************************************************/
+/* TIM14 init function */
 void MX_TIM14_Init(void)
 {
 
@@ -150,9 +138,9 @@ void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 6-1; //Ftim14= 24MHz/(pre+1)=24/6=4MHz;
+  htim14.Init.Prescaler = 0;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 100-1; //Ftim14per = 4MHz/(pre+1)=4Mhz/100=40KHz,T=1/40=0.0025ms=2.5us
+  htim14.Init.Period = 65535;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
@@ -164,7 +152,7 @@ void MX_TIM14_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 100; //pwm duty cycle = Puls/(Period+1) *100% =
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim14, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -188,8 +176,13 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspInit 0 */
     /* TIM1 clock enable */
     __HAL_RCC_TIM1_CLK_ENABLE();
-  /* USER CODE BEGIN TIM1_MspInit 1 */
 
+    /* TIM1 interrupt Init */
+   // HAL_NVIC_SetPriority(TIM1_BRK_UP_TRG_COM_IRQn, 0, 0);
+   // HAL_NVIC_EnableIRQ(TIM1_BRK_UP_TRG_COM_IRQn);
+  /* USER CODE BEGIN TIM1_MspInit 1 */
+      HAL_NVIC_SetPriority(TIM1_BRK_UP_TRG_COM_IRQn,2,0);
+      HAL_NVIC_EnableIRQ(TIM1_BRK_UP_TRG_COM_IRQn);
   /* USER CODE END TIM1_MspInit 1 */
   }
   else if(tim_baseHandle->Instance==TIM2)
@@ -273,6 +266,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_TIM1_CLK_DISABLE();
+
+    /* TIM1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TIM1_BRK_UP_TRG_COM_IRQn);
   /* USER CODE BEGIN TIM1_MspDeInit 1 */
 
   /* USER CODE END TIM1_MspDeInit 1 */
